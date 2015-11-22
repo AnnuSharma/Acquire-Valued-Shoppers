@@ -16,12 +16,6 @@ def split_csv_file(f, dst_dir, keyfunc):
                                              mode='w', newline=''))
         csv_writers[k].writerow(row)
 
-def get_args_from_cli():
-    input_filename = sys.argv[1]
-    column = int(sys.argv[2])
-    dst_dir = sys.argv[3]
-    return (input_filename, column, dst_dir)
-
 def get_args_from_gui():
     input_filename = askopenfilename(
         filetypes=(('CSV', '.csv'),),
@@ -33,8 +27,6 @@ def get_args_from_gui():
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         input_filename, column, dst_dir = get_args_from_gui()
-    elif len(sys.argv) == 4:
-        input_filename, column, dst_dir = get_args_from_cli()
     else:
         raise Exception("Invalid number of arguments")
     with open(input_filename, mode='r', newline='') as f:
