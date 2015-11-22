@@ -39,6 +39,4 @@ if __name__ == '__main__':
         raise Exception("Invalid number of arguments")
     with open(input_filename, mode='r', newline='') as f:
         split_csv_file(f, dst_dir, lambda r: r[column-1]+'.csv')
-        # if the column has funky values resulting in invalid filenames
-        # replace the line from above with:
-        # split_csv_file(f, dst_dir, lambda r: binascii.b2a_hex(r[column-1].encode('utf-8')).decode('utf-8')+'.csv')
+        
