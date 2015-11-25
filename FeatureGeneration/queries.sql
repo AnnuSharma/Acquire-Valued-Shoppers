@@ -1,0 +1,113 @@
+/* Formatted on 24/11/2015 19:32:08 (QP5 v5.287) */
+--has_bought_times_by_customer_from_the_offer_company
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         COUNT (1) PURCHASE_TIMES
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID;
+
+--has_bought_amount_by_customer_from_the_offer_company
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         SUM (PURCHASE_AMT) PURCHASE_AMT
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID;
+
+--has_bought_quantity_by_customer_from_the_offer_company
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         SUM (PURCHASE_QTY) PURCHASE_QTY
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID;
+
+--has_bought_times_by_customer_from_the_offer_company_in_last_180_days
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         COUNT (1) PURCHASE_TIMES
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND TO_DATE (TR.PURCHASE_DATE, 'dd/mm/yyyy') BETWEEN   TO_DATE (
+                                                                   TH.OFFER_DATE,
+                                                                   'dd/mm/yyyy')
+                                                              - 180
+                                                          AND TO_DATE (
+                                                                 TH.OFFER_DATE,
+                                                                 'dd/mm/yyyy')
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID;
+
+--has_never_bought_by_customer_from_the_offer_company
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         DECODE (COUNT (1), 0, 'T', 'F') NOT_PURCHASED_BEFORE
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID;
+
+--has_bought_times_by_customer_from_the_offer_category_company_brand
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.CATEGORY_ID CATEGORY_IDANY_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         OFF.BRAND_ID BRAND_ID,
+         COUNT (1) PURCHASE_TIMES
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND OFF.BRAND_ID = TR.BRAND_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID,
+         OFF.CATEGORY_ID,
+         OFF.COMPANY_ID,
+         OFF.BRAND_ID;
+
+--has_never_bought_by_customer_from_the_offer_category_company_brand
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID,
+         OFF.CATEGORY_ID CATEGORY_IDANY_ID,
+         OFF.COMPANY_ID COMPANY_ID,
+         OFF.BRAND_ID BRAND_ID,
+         DECODE (COUNT (1), 0, 'T', 'F') NOT_PURCHASED_BEFORE
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+         AND OFF.COMPANY_ID = TR.COMPANY_ID
+         AND OFF.BRAND_ID = TR.BRAND_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID,
+         OFF.CATEGORY_ID,
+         OFF.COMPANY_ID,
+         OFF.BRAND_ID;
+
+--total_amount_spent_by_customer
+
+  SELECT TH.CUSTOMER_ID CUSTOMER_ID, SUM (PURCHASE_AMT) TOTAL_AMT_SPENT
+    FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+   WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+         AND TH.OFFER_ID = OFF.OFFER_ID
+         AND TR.CUSTOMER_ID = 101623425
+GROUP BY TH.CUSTOMER_ID;
