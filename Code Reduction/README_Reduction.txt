@@ -1,0 +1,1 @@
+The Reduction.py script is run twice to separately generate the Reduced_Company and Reduced_Category datasets. These datasets are then merged removing the duplicates using sort -u file1 file2 > reducedFile. This reducedFile will be used for further analysis in this project.  
