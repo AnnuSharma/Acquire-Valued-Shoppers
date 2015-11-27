@@ -5,7 +5,6 @@ from pyspark.sql import Row
 import os
 
 path = os.getcwd()
-
 transactionFile = sc.textFile(path+"/reducedFile.csv")
 sqlContext = SQLContext(sc)
 schemaString = "CUSTOMER_ID CHAIN_ID DEPARTMENT_ID CATEGORY_ID COMPANY_ID BRAND_ID PURCHASE_DATE PRODUCT_SIZE PRODUCT_MEASURE PURCHASE_QTY PURCHASE_AMT"
@@ -18,6 +17,11 @@ schema = StructType(fields)
 transactions = transactionFile.map(lambda l: l.split(",")).map(lambda p: (p[0],p[1],p[2],p[3],p[4],p[5],parse(p[6]),float(p[7]),p[8],float(p[9]),float(p[10])))
 transactions_df = sqlContext.createDataFrame(transactions, schema) 
 transactions_df.registerTempTable("transactions")
+
+#Cleaning the values in transactionsDF
+transactions_df = sqlContext.sql("select * from transactions where PURCHASE_AMT != 0 or PURCHASE_AMT !=null or PURCHASE_QTY != 0 or PURCHASE_QTY != null or CATEGORY_ID != null or COMPANY_ID != null or BRAND_ID != null")
+transactions_df.registerTempTable("transactions")
+
 
 offerFile = sc.textFile(path+"/offers.csv")
 schemaString = "OFFER_ID CATEGORY_ID MIN_QTY_TO_PURCHASE COMPANY_ID OFFER_VALUE BRAND_ID"
