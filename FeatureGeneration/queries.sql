@@ -343,7 +343,7 @@ GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID, OFF.CATEGORY_ID;
 
 
 —-ratio_of_returned_category_company_over_bought_category_company
--- let me know if it is taking more time in spark
+-- let me know if it is taking more time in spark(made changes as it has to be done for a specific customer)
 SELECT CUSTOMER_ID,
          (CASE
              WHEN BOUGHT_COUNT > 0 THEN RETURN_COUNT / BOUGHT_COUNT
@@ -358,14 +358,14 @@ SELECT CUSTOMER_ID,
                    AND TH.OFFER_ID = OFF.OFFER_ID
                    AND OFF.CATEGORY_ID = TR.CATEGORY_ID
                    AND OFF.COMPANY_ID = TR.COMPANY_ID
-          --AND TR.CUSTOMER_ID = 217526800
-          GROUP BY TR.CUSTOMER_ID --ORDER BY BOUGHT_COUNT DESC
+          	   AND TR.CUSTOMER_ID = 217526800
+          	   GROUP BY TR.CUSTOMER_ID 
          )
 ORDER BY RATIO DESC;
 
 —-ranking_market_and_chain_on_offer_for_category_company_brand
 
---Generated chainwise ranking for each market
+--Generated chainwise ranking for each market(we need to find the ranking of the market+chain on offer for the five category+company — can you edit accordingly?) 
 -- if ranking is needed individually for market as well as chain remove the partition and generate rank
 SELECT MARKET_ID,
        CHAIN_ID,
@@ -382,7 +382,7 @@ SELECT MARKET_ID,
                  AND OFF.BRAND_ID = TR.BRAND_ID
         GROUP BY TH.MARKET_ID, TH.CHAIN_ID)
 		
-—-has_bought_ratio_offer_category_over_all_transactions
+—-has_bought_ratio_offer_category_over_all_transactions (edited for one customer)
 
   SELECT CUSTOMER_ID,
          (CASE WHEN NO_OFFER_CNT > 0 THEN OFFER_CNT / NO_OFFER_CNT ELSE 0 END)
@@ -395,10 +395,12 @@ SELECT MARKET_ID,
                        WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
                              AND TH.OFFER_ID = OFF.OFFER_ID
                              AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+			     AND TR.CUSTOMER_ID = 217526800
                     GROUP BY TR.CUSTOMER_ID) A
                   FULL OUTER JOIN
                   (  SELECT TR.CUSTOMER_ID CUSTOMER_ID2, COUNT (1) CNT2
                        FROM TRANSACTIONS TR
+                       WHERE TR.CUSTOMER_ID = 217526800
                    GROUP BY TR.CUSTOMER_ID) B
                      ON A.CUSTOMER_ID1 = B.CUSTOMER_ID2))
 ORDER BY RATIO DESC
