@@ -343,9 +343,69 @@ GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID, OFF.CATEGORY_ID;
 
 
 —-ratio_of_returned_category_company_over_bought_category_company
+-- let me know if it is taking more time in spark
+SELECT CUSTOMER_ID,
+         (CASE
+             WHEN BOUGHT_COUNT > 0 THEN RETURN_COUNT / BOUGHT_COUNT
+             ELSE 0
+          END)
+            RATIO
+    FROM (  SELECT TR.CUSTOMER_ID CUSTOMER_ID,
+                   COUNT (CASE WHEN TR.PURCHASE_AMT < 0 THEN 1 END) RETURN_COUNT,
+                   COUNT (CASE WHEN TR.PURCHASE_AMT > 0 THEN 1 END) BOUGHT_COUNT
+              FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+             WHERE TH.CUSTOMER_ID = TR.CUSTOMER_ID
+                   AND TH.OFFER_ID = OFF.OFFER_ID
+                   AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+                   AND OFF.COMPANY_ID = TR.COMPANY_ID
+          --AND TR.CUSTOMER_ID = 217526800
+          GROUP BY TR.CUSTOMER_ID --ORDER BY BOUGHT_COUNT DESC
+         )
+ORDER BY RATIO DESC;
+
 —-ranking_market_and_chain_on_offer_for_category_company_brand
+
+--Generated chainwise ranking for each market
+-- if ranking is needed individually for market as well as chain remove the partition and generate rank
+SELECT MARKET_ID,
+       CHAIN_ID,
+       MARKET_TXN_CNT,
+       RANK () OVER (PARTITION BY MARKET_ID ORDER BY MARKET_TXN_CNT DESC) "RANK"
+  FROM (  SELECT TH.MARKET_ID MARKET_ID,
+                 TH.CHAIN_ID CHAIN_ID,
+                 COUNT (1) MARKET_TXN_CNT
+            FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+           WHERE TH.CUSTOMER_ID = TR.CUSTOMER_ID
+                 AND TH.OFFER_ID = OFF.OFFER_ID
+                 AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+                 AND OFF.COMPANY_ID = TR.COMPANY_ID
+                 AND OFF.BRAND_ID = TR.BRAND_ID
+        GROUP BY TH.MARKET_ID, TH.CHAIN_ID)
+		
 —-has_bought_ratio_offer_category_over_all_transactions
+
+  SELECT CUSTOMER_ID,
+         (CASE WHEN NO_OFFER_CNT > 0 THEN OFFER_CNT / NO_OFFER_CNT ELSE 0 END)
+            RATIO
+    FROM (SELECT CUSTOMER_ID2 CUSTOMER_ID,
+                 NVL (CNT1, 0) OFFER_CNT,
+                 NVL (CNT2, 0) NO_OFFER_CNT
+            FROM ( (  SELECT TR.CUSTOMER_ID CUSTOMER_ID1, COUNT (1) CNT1
+                        FROM TRAIN_HISTORY TH, OFFERS OFF, TRANSACTIONS TR
+                       WHERE     TH.CUSTOMER_ID = TR.CUSTOMER_ID
+                             AND TH.OFFER_ID = OFF.OFFER_ID
+                             AND OFF.CATEGORY_ID = TR.CATEGORY_ID
+                    GROUP BY TR.CUSTOMER_ID) A
+                  FULL OUTER JOIN
+                  (  SELECT TR.CUSTOMER_ID CUSTOMER_ID2, COUNT (1) CNT2
+                       FROM TRANSACTIONS TR
+                   GROUP BY TR.CUSTOMER_ID) B
+                     ON A.CUSTOMER_ID1 = B.CUSTOMER_ID2))
+ORDER BY RATIO DESC
+
 -—discount_on_the_original_price
+   
+   need to check this
 
 
 
