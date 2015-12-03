@@ -46,11 +46,3 @@ trainFile = trainFile.subtract(header)
 train = trainFile.map(lambda l: l.split(",")).map(lambda p: (p[0],p[1],p[2],p[3],float(p[4]),p[5],parse(p[6])))
 train_df = sqlContext.createDataFrame(train, schema) 
 train_df.registerTempTable("train")
-
-has_bought_times_by_customer = sqlContext.sql(""" SELECT TH.CUSTOMER_ID CUSTOMER_ID, OFF.COMPANY_ID COMPANY_ID, COUNT (*) PURCHASE_TIMES
-                                      FROM train TH, offers OFF, transactions TR
-                                      WHERE TH.CUSTOMER_ID = TR.CUSTOMER_ID AND TH.OFFER_ID = OFF.OFFER_ID
-                                      AND OFF.COMPANY_ID = TR.COMPANY_ID AND TR.CUSTOMER_ID = "86246"
-                                      GROUP BY TH.CUSTOMER_ID, OFF.COMPANY_ID""")
-
-has_bought_times_by_customer.show()
