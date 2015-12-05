@@ -1,1 +1,4 @@
-The Reduction.py script is run twice to separately generate the Reduced_Company and Reduced_Category datasets. These datasets are then merged removing the duplicates using sort -u file1 file2 > reducedFile. This reducedFile will be used for further analysis in this project.  
+Run Reduction_Category.py and Reduction_Company.py scripts in the offers.csv and transactions.csv folder.
+This will generate the reduced_company and reduced_category datasets.
+The generated datasets are merged by removing the duplicates using sort -u reduced_category reduced_company > reducedFile. 
+We will use this reducedFile for further analysis in the project.  
