@@ -1,5 +1,0 @@
-load data
-infile 'E:\IDS Project\Sqlldr\Transactions.csv'
-into table TRANSACTIONS
-fields terminated by ',' TRAILING NULLCOLS
-(TRANSACTION_ID, CHAIN_ID, DEPARTMENT_ID, CATEGORY_ID, COMPANY_ID, BRAND_ID, PURCHASE_DATE DATE 'yyyy-mm-dd', PROD_SIZE, PROD_MEASURE, PURCHASE_QTY, PURCHASE_AMT)
